@@ -70,8 +70,8 @@ log_level = warn
 
 Create '/tmp/f1' and write [hello] ...
 Rename '/tmp/f1' to '/tmp/f2' ...
-[37m[  0.246003 0 axfs_vfs:160] [33m[AxError::Unsupported][m
-[m[37m[  0.247933 0 axruntime::lang_items:5] [31mpanicked at exercises/ramfs_rename/src/main.rs:51:9:
+[37m[  0.250210 0 axfs_vfs:160] [33m[AxError::Unsupported][m
+[m[37m[  0.252080 0 axruntime::lang_items:5] [31mpanicked at exercises/ramfs_rename/src/main.rs:51:9:
 Error: Operation not supported[m
 [mramfs_rename default
     [92;1mCreating[0m FAT32 disk image "disk.img" ...
