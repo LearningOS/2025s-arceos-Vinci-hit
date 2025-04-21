@@ -70,8 +70,8 @@ log_level = warn
 
 Create '/tmp/f1' and write [hello] ...
 Rename '/tmp/f1' to '/tmp/f2' ...
-[37m[  0.250210 0 axfs_vfs:160] [33m[AxError::Unsupported][m
-[m[37m[  0.252080 0 axruntime::lang_items:5] [31mpanicked at exercises/ramfs_rename/src/main.rs:51:9:
+[37m[  0.244706 0 axfs_vfs:160] [33m[AxError::Unsupported][m
+[m[37m[  0.246532 0 axruntime::lang_items:5] [31mpanicked at exercises/ramfs_rename/src/main.rs:51:9:
 Error: Operation not supported[m
 [mramfs_rename default
     [92;1mCreating[0m FAT32 disk image "disk.img" ...
@@ -79,7 +79,7 @@ mkfs.fat 4.1 (2017-01-24)
 alt_alloc default
     [92;1mCreating[0m FAT32 disk image "disk.img" ...
 mkfs.fat 4.1 (2017-01-24)
-support_hashmap pass
+support_hashmap default
     [92;1mCreating[0m FAT32 disk image "disk.img" ...
 mkfs.fat 4.1 (2017-01-24)
 make[1]: Entering directory '/home/hit/2025s-arceos-Vinci-hit/arceos/payload'
@@ -108,4 +108,4 @@ make[2]: Leaving directory '/home/hit/2025s-arceos-Vinci-hit/arceos/payload/hell
 make[1]: Leaving directory '/home/hit/2025s-arceos-Vinci-hit/arceos/payload'
 File 'payload/skernel2/skernel2' doesn't exist!
 simple_hv default
-200
+100
