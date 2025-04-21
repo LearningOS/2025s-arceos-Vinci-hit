@@ -4,7 +4,8 @@
 #[cfg(feature = "axstd")]
 use axstd::println;
 
+
 #[cfg_attr(feature = "axstd", no_mangle)]
 fn main() {
-    println!("[WithColor]: Hello, Arceos!");
+    println!("[WithColor]: \x1b[31mHello, Arceos!\x1b[0m");
 }
