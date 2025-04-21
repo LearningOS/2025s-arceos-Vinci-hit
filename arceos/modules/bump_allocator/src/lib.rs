@@ -16,12 +16,20 @@ use allocator::{BaseAllocator, ByteAllocator, PageAllocator};
 /// When it goes down to ZERO, free bytes-used area.
 /// For pages area, it will never be freed!
 ///
+const MIN_HEAP_SIZE: usize = 0x8000; // 32 K
 pub struct EarlyAllocator;
 
 impl EarlyAllocator {
 }
 
 impl BaseAllocator for EarlyAllocator {
+    fn init(&mut self, start: usize, end: usize) {
+        assert!(end > MIN_HEAP_SIZE);
+          
+    }
+    fn add_memory(&mut self, start: usize, size: usize) -> allocator::AllocResult {
+        
+    }
 }
 
 impl ByteAllocator for EarlyAllocator {
