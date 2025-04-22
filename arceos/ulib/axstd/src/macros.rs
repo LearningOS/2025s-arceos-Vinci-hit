@@ -16,7 +16,23 @@ macro_rules! print {
 /// Prints to the standard output, with a newline.
 #[macro_export]
 macro_rules! println {
-    () => { $crate::print!("\n") };
+    // 无参数版本
+    () => {
+        $crate::print!("\x1b[0m\n")  // 重置颜色并换行
+    };
+
+    ($msg:expr) => {
+        if $msg.starts_with("[WithColor]: ") {
+            // 红色显示带标记的文本
+            $crate::io::__print_impl(format_args!(
+                "\x1b[31m{}\x1b[0m\n",  // 31m=红色，0m=重置
+                $msg
+            ));
+        } else {
+            // 普通显示
+            $crate::io::__print_impl(format_args!("{}\n", $msg));
+        }
+    };
     ($($arg:tt)*) => {
         $crate::io::__print_impl(format_args!("{}\n", format_args!($($arg)*)));
     }
