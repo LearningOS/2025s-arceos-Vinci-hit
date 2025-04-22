@@ -5,7 +5,7 @@ use crate::time;
 
 static PARK_MILLER_LEHMER_SEED: SpinNoIrq<u32> = SpinNoIrq::new(0);
 const RAND_MAX: u64 = 2_147_483_647;
-
+#[no_mangle]
 pub fn random() -> u128 {
 	let mut seed = PARK_MILLER_LEHMER_SEED.lock();
     if *seed == 0 {
