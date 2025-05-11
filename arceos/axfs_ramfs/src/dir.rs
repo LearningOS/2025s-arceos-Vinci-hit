@@ -164,7 +164,33 @@ impl VfsNodeOps for DirNode {
             self.remove_node(name)
         }
     }
+    fn rename(&self, src_path: &str, dst_path: &str) -> VfsResult {
+        log::debug!("rename from {:?} to {:?}", src_path, dst_path);
+        let (src_name, src_rest) = split_path(src_path);
+        let (dst_name, dst_rest) = split_path(dst_path);
 
+        if let (Some(src_rest), Some(dst_rest)) = (src_rest, dst_rest){
+            self.rename(src_rest, dst_rest)
+        }else if src_name != dst_name && src_rest.is_none() && dst_rest.is_none(){
+            let src_node_lock = self.children.read();
+            let src_node = src_node_lock.get(src_name).ok_or(VfsError::NotFound)?.clone();
+            drop(src_node_lock);
+            self.children.write().insert(dst_name.into(), src_node);
+            self.children.write().remove(src_name);
+            Ok(())
+        }else if src_name != dst_name {
+            if let Some(dst_rest)  = dst_rest{
+                log::debug!(" {:?} , {:?} ", src_path, dst_rest);
+                self.rename(src_path, dst_rest)
+            }else{
+                log::warn!("unimplemented src_name:{:?}!= dst_name:{:?}", src_name, dst_name);
+                Err(VfsError::InvalidInput)
+            }
+        }else{
+            log::warn!("unimplemented src_name:{:?}!= dst_name:{:?}", src_name, dst_name);
+            Err(VfsError::InvalidInput)
+        }
+    }
     axfs_vfs::impl_vfs_dir_default! {}
 }
 

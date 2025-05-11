@@ -16,9 +16,6 @@ use allocator::{AllocError, AllocResult, BaseAllocator, ByteAllocator, PageAlloc
 /// For bytes area, 'count' records number of allocations.
 /// When it goes down to ZERO, free bytes-used area.
 /// For pages area, it will never be freed!
-///思路：首先初始化位分配器大小为最小堆大小，页分配器大小为0
-/// 然后，当位分配器的大小不足以满足分配请求时，将位分配器的大小增加。但不能大于页分配器的内存起始。
-/// 当页分配器大小不满足时，就重新init指定范围，init是insert
 #[inline]
 const fn align_down(pos: usize, align: usize) -> usize {
     pos & !(align - 1)
@@ -53,6 +50,7 @@ impl<const PAGE_SIZE:usize> EarlyAllocator<PAGE_SIZE> {
 
 impl<const PAGE_SIZE:usize> BaseAllocator for EarlyAllocator<PAGE_SIZE> {
     fn init(&mut self, start_vaddr: usize, size: usize) {
+        //以下都是参考官方教程的
         self.start = start_vaddr;
         self.end = start_vaddr + size;
         self.b_pos = self.start;

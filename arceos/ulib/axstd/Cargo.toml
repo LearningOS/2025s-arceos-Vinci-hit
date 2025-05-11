@@ -80,3 +80,6 @@ arceos_api = { workspace = true }
 axio = "0.1"
 axerrno = "0.1"
 kspin = "0.1"
+
+# [patch.crates-io]
+# axfs_ramfs = { path = 'arceos/axfs_ramfs' }
