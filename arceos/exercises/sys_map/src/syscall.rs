@@ -76,7 +76,7 @@ impl From<MmapProt> for MappingFlags {
 }
 
 bitflags::bitflags! {
-    #[derive(Debug)]
+    #[derive(Debug, PartialEq)]
     /// flags for sys_mmap
     ///
     /// See <https://github.com/bminor/glibc/blob/master/bits/mman.h>
@@ -130,7 +130,9 @@ fn handle_syscall(tf: &TrapFrame, syscall_num: usize) -> isize {
     };
     ret
 }
-
+use alloc::string::String;
+use alloc::vec;
+use memory_addr::AddrRange;
 #[allow(unused_variables)]
 fn sys_mmap(
     addr: *mut usize,
@@ -140,7 +142,29 @@ fn sys_mmap(
     fd: i32,
     _offset: isize,
 ) -> isize {
-    unimplemented!("no sys_mmap!");
+    let flags = MmapFlags::from_bits_truncate(flags);
+    if flags != MmapFlags::MAP_PRIVATE {
+        unimplemented!("only implement private flag!");
+    }
+    let prot = MmapProt::from_bits_truncate(prot);
+    let mut buf = vec![0u8;length];
+    let curr = current();
+    let mut aspace = curr.task_ext().aspace.lock();
+    let find_space = aspace.find_free_area((addr as usize).into(), length, AddrRange { start: aspace.base(), end: aspace.end() });
+    if let Some(find_space) = find_space {
+        aspace.map_alloc(find_space.into(), ((length / 4096)+1)*4096, MappingFlags::from(prot) | MappingFlags::WRITE, true).unwrap();
+        let result = sys_read(fd, buf.as_mut_ptr() as *mut c_void, length);
+        unsafe {
+        core::ptr::copy_nonoverlapping(
+            buf.as_ptr(),
+            find_space.as_mut_ptr(),
+            length,
+        );
+        find_space.as_usize() as isize
+    }
+    }else{
+        unimplemented!("no sys_mmap!");
+    }
 }
 
 fn sys_openat(dfd: c_int, fname: *const c_char, flags: c_int, mode: api::ctypes::mode_t) -> isize {

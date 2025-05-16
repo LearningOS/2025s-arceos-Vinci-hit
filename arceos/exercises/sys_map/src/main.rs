@@ -66,7 +66,6 @@ fn init_user_stack(uspace: &mut AddrSpace, populating: bool) -> io::Result<VirtA
         MappingFlags::READ | MappingFlags::WRITE | MappingFlags::USER,
         populating,
     ).unwrap();
-
     let app_name = "hello";
     let av = BTreeMap::new();
     let (stack_data, ustack_pointer) = kernel_elf_parser::get_app_stack_region(

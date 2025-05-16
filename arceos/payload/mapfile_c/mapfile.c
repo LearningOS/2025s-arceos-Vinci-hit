@@ -37,6 +37,7 @@ void verify_file(const char *fname)
     }
     addr = mmap(NULL, 32, PROT_READ, MAP_PRIVATE, fd, 0);
     if (addr == NULL) {
+        printf("Read back content: %s\n", addr);
         printf("Map file error!\n");
         exit(-1);
     }
