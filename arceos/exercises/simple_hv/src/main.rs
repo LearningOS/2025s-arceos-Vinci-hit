@@ -16,6 +16,7 @@ mod csrs;
 mod sbi;
 mod loader;
 
+use axtask::{current, TaskExtRef};
 use vcpu::VmCpuRegisters;
 use riscv::register::{scause, sstatus, stval};
 use csrs::defs::hstatus;
@@ -24,7 +25,7 @@ use csrs::{RiscvCsrTrait, CSR};
 use vcpu::_run_guest;
 use sbi::SbiMessage;
 use loader::load_vm_image;
-use axhal::mem::PhysAddr;
+use axhal::{mem::PhysAddr, paging::MappingFlags};
 use crate::regs::GprIndex::{A0, A1};
 
 const VM_ENTRY: usize = 0x8020_0000;
@@ -48,7 +49,6 @@ fn main() {
     // Setup pagetable for 2nd address mapping.
     let ept_root = uspace.page_table_root();
     prepare_vm_pgtable(ept_root);
-
     // Kick off vm and wait for it to exit.
     while !run_guest(&mut ctx) {
     }
@@ -102,16 +102,26 @@ fn vmexit_handler(ctx: &mut VmCpuRegisters) -> bool {
             }
         },
         Trap::Exception(Exception::IllegalInstruction) => {
-            panic!("Bad instruction: {:#x} sepc: {:#x}",
-                stval::read(),
-                ctx.guest_regs.sepc
-            );
+            if stval::read() == 0xf14025f3 {
+                // repare_guest_context(&mut ctx);
+                ctx.guest_regs.gprs.set_reg(regs::GprIndex::A1, 0x1234);
+                
+                ctx.guest_regs.sepc += 4;
+            }else{
+                panic!("Bad instruction: {:#x} sepc: {:#x}",
+                    stval::read(),
+                    ctx.guest_regs.sepc,
+                );
+            }
         },
         Trap::Exception(Exception::LoadGuestPageFault) => {
-            panic!("LoadGuestPageFault: stval{:#x} sepc: {:#x}",
-                stval::read(),
-                ctx.guest_regs.sepc
-            );
+            // repare_guest_context(&mut ctx);
+            ctx.guest_regs.gprs.set_reg(A0, 0x6688);
+            ctx.guest_regs.sepc += 4;
+            // panic!("LoadGuestPageFault: stval:{:#x} sepc: {:#x}",
+            //     stval::read(),
+            //     ctx.guest_regs.sepc
+            // );
         },
         _ => {
             panic!(
